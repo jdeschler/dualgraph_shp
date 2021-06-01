@@ -217,12 +217,11 @@ def add_edge_by_feature(graph, u_key, v_key, key):
 def mark_edges(g_shp, marks, col = "marked", val = 1):
     if col not in list(g_shp):
         g_shp[col] = 0
-    for idx, row in g_shp.iterrows():
-        for u,v in marks:
-            if row['endpoint_u'] == u and row['endpoint_v'] == v:
-                g_shp.loc[idx, col] = val
-            elif row['endpoint_u'] == v and row['endpoint_v'] == u:
-                g_shp.loc[idx, col] = val
+    for u,v in marks:
+        # try u,v
+        g_shp.loc[(g_shp['endpoint_u'] == u) & (g_shp['endpoint_v'] == v), col] = val
+        # try v,u
+        g_shp.loc[(g_shp['endpoint_v'] == u) & (g_shp['endpoint_u'] == u), col] = val
     return g_shp
 
 ########
@@ -248,5 +247,6 @@ def mark_edges_dict(g_shp, marks, col = "marked"):
         v = k[1]
         # try u,v
         g_shp.loc[(g_shp['endpoint_u'] == u) & (g_shp['endpoint_v'] == v), col] = val
+        # try v,u
         g_shp.loc[(g_shp['endpoint_v'] == u) & (g_shp['endpoint_u'] == u), col] = val
     return g_shp
