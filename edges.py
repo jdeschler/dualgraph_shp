@@ -224,3 +224,29 @@ def mark_edges(g_shp, marks, col = "marked", val = 1):
             elif row['endpoint_u'] == v and row['endpoint_v'] == u:
                 g_shp.loc[idx, col] = val
     return g_shp
+
+########
+# mark_edges_dict
+#  sets a column value in a from-graph GeoDataFrame for a list of edges
+#
+# g_shp: a GeoDataFrame made from a graph, MUST have endpoint columns `endpoint_u` and `endpoint_v`
+#         function `edges_to_gdf_endpoints` produces a proper GeoDataFrame for this function
+# marks: dict of tuples, each tuple being a (u,v) pair where u and v will be matched against
+#          values in the endpoint columns of g_shp, order of (u,v) and (v,u) will both get marked
+#          if feeding in GeoDataFrame from `edges_to_gdf_endpoints` the values in `marks` tuples
+#          should be from the column passed to the `edges_to_gdf_endpoints` in the `endpoints` argument
+# col:   column to mark each edge in, if it does not already exist, will be created and initialized to 0
+#
+# returns
+#  a GeoDataFrame with edges from `marks` marked with the corresponding value from `marks`
+#  in the column `col`
+def mark_edges_dict(g_shp, marks, col = "marked"):
+    if col not in list(g_shp):
+        g_shp[col] = 0
+    for k,val in marks.items():
+        u = k[0]
+        v = k[1]
+        # try u,v
+        g_shp.loc[(g_shp['endpoint_u'] == u) & (g_shp['endpoint_v'] == v), col] = val
+        g_shp.loc[(g_shp['endpoint_v'] == u) & (g_shp['endpoint_u'] == u), col] = val
+    return g_shp

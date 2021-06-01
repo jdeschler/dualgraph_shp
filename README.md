@@ -68,6 +68,18 @@ Sets a column value in a from-graph GeoDataFrame for a list of edges
 #### Outputs
 * returns a GeoDataFrame with edges from `marks` marked with `val` in the column `col`
 
+
+### `mark_edges_dict`
+Sets a column value in a from-graph GeoDataFrame with a dictionary of edge tuples. Unlike `mark_edges`, allows different edges to be set to different edges in one pass
+
+#### Inputs
+* **g_shp**: a GeoDataFrame made from a graph, MUST have endpoint columns `endpoint_u` and `endpoint_v` function `edges_to_gdf_endpoints` produces a proper GeoDataFrame for this function
+* **marks**: dict of tuples, each tuple being a (u,v) pair where u and v will be matched against values in the endpoint columns of g_shp, order of (u,v) and (v,u) will both get marked. If feeding in GeoDataFrame from `edges_to_gdf_endpoints` the values in `marks` tuples should be from the column passed to the `edges_to_gdf_endpoints` in the `endpoints` argument. **MUST** be of the form `(u,v): value` where `u` and `v` match the endpoint columns in `g_shp`
+* **col**: column to mark each edge in, if it does not already exist, will be created and initialized to 0
+
+#### Outputs
+* returns a GeoDataFrame with edges from `marks` marked with the corresponding value in the column `col`
+
 ## **Helper functions**
 ### `find_node_by_key`
 Finds a node in a graph by a column value. _Adapted from GerryChain [documentation](https://gerrychain.readthedocs.io/en/latest/)_.
