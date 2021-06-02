@@ -174,6 +174,32 @@ def edges_to_shapefile_endpoints(graph, shp, endpoints = "GEOID10", key = "GEOID
     dual = dual.set_crs(shp.crs)
     dual.to_file(outfile)
 
+####################
+# shared_boundaries_gdf
+#   stores the boundaries crossed by the edges of a dual graph
+# 
+# graph: graph to pull edges from
+# g_shp: shapefile of the graph with endpoint columns - should have been created
+#         by `edges_to_gdf_endpoints`
+# shp:   associated shapefile with geometries
+# key:   primary key unique identifier of shapefile, must match key in endpoint columns
+#
+# returns
+#  a GeoDataFrame of crossed boundaries as MultiLineStrings, projected to the crs of `shp`
+def shared_boundaries_gdf(graph, g_shp, shp, key = "GEOID10"):
+    key_dict = {}
+    for _idx, row in shp.iterrows():
+        key_dict[row[key]] = row['geometry']
+    es = zip(g_shp['endpoint_u'], g_shp['endpoint_v'])
+    nodes = [(find_node_by_key(u, graph, key = key), find_node_by_key(v, graph, key = key)) for u,v in es]
+    keys = [(graph.nodes[n1][key], graph.nodes[n2][key]) for n1, n2 in nodes]
+    geoms = [(key_dict[k1], key_dict[k2]) for k1,k2 in keys]
+    overlaps = gpd.GeoDataFrame(gpd.GeoSeries([p1.intersection(p2) for p1,p2 in geoms]), columns = ['geometry'])
+    overlaps = overlaps.set_crs(shp.crs)
+    overlaps['endpoint_u'] = g_shp['endpoint_u']
+    overlaps['endpoint_v'] = g_shp['endpoint_v']
+    return overlaps
+
 ########
 # [remove/add]_edge_by_feature()
 #  either removes or adds an edge between nodes that have certain values in a column

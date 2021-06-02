@@ -56,6 +56,19 @@ Writes edges of a dual graph to a shapefile, with polygons centroids as endpoint
 ### `edges_to_gdf_endpoints`, `edges_to_shapefile_endpoints`
 These functions do the same things as the three above (without `_endpoints`), with the exception that the resulting GeoDataFrame and shapefile have a value from each edge's endpoints. The stored value is controlled by passing the `endpoints` argument to each function, and should typically be a unique identifier for a node. The endpoints are stored in columns `endpoint_u` and `endpoint_v`. Ordering between u and v is set by the networkx graph object.
 
+
+### `shared_boundaries_gdf`
+Stores the boundaries crossed by the edges of a dual graph into a GeoDataFrame
+
+#### Inputs 
+* **graph**: graph to pull edges from
+* **g_shp**: shapefile of the graph with endpoint columns - should have been created by `edges_to_gdf_endpoints`
+* **shp**: associated shapefile with geometries, resulting GeoDataFrame will have the projection of `shp`
+* **key**: primary key unique identifier of shapefile, must match key in endpoint columns
+
+#### Outputs
+* returns a GeoDataFrame of crossed boundaries as MultiLineStrings, projected to the crs of `shp`. This GeoDataFrame will be able to be passed to `mark_edges` and `mark_edges_dict` the same way as one created using the `edges_to_*` functions.
+
 ### `mark_edges`
 Sets a column value in a from-graph GeoDataFrame for a list of edges
 
