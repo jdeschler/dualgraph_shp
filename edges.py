@@ -53,7 +53,7 @@ def plot_problems(graph, shp, key = "GEOID10"):
 def plot_components(graph, shp, key = "GEOID10"):
     components = list(nx.connected_components(graph))
     print([len(c) for c in components])
-    keys_comps = [[graph.nodes[n]['VTD'] for n in c] for c in components]
+    keys_comps = [[graph.nodes[n][key] for n in c] for c in components]
     
     component_nums = []
     for k in list(shp[key]):
